@@ -15,7 +15,9 @@ except:
 
 def update(message):
 	bonus = ""
-	if bonus != 0:
+	if width != 0:
+		if len(message) > width:
+			message = message[-1*width:]
 		bonus = " " * (width - len(message) )
 	print "\033[F" + message + bonus
 
@@ -27,16 +29,19 @@ if "g" in choice:
 
 	dirs = directories.split(":")
 	for d in dirs:
-		update("Checking " + d + "...")
+		#update("Checking " + d + "...")
 		for root, sub, files, in os.walk(d):
 			for f in files:
 				af = root + "/" + f
-				update("Checking if " + af + " is executable...") 
+				#update("Checking if " + af + " is executable...") 
 				exe = os.access(af, os.X_OK)
-				if exe:
-					update("Hashing " + af + "...")
-					binmap[af] = hashlib.md5(af).hexdigest()
-					update(af + " hashed to " + binmap[af])
+				try:
+					if exe:
+						update("Hashing " + af + "...")
+						binmap[af] = hashlib.md5(open(af,'rb').read()).hexdigest()
+						update(af + " hashed to " + binmap[af])
+				except:
+					pass
 	update("All done!")
 	filename = "binhash" + str(int(time.time())) + ".txt"
 	output = open(filename, "w")
